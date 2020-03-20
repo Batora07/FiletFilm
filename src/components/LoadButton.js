@@ -11,7 +11,7 @@ class LoadButton extends Component{
                     <Spinner />
                 ) :
                 (
-                    <div className="loadButton">
+                    <div onClick={this.props.onButtonClick} className="loadButton">
                         <h3 className="loadButton--text">VOIR PLUS</h3>
                     </div>
                 )
