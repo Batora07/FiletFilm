@@ -21,3 +21,16 @@ Filet Film en React ( ͡° ͜ʖ ͡°)
 
 * gérer le routage pour les différentes pages de l'appli :
 => yarn add react-router-dom
+
+* REDUX :
+=> yarn add redux
+=> yarn add react-redux
+
+* React Player
+=> yarn add react-player
+
+* Firebase (connexion avec Google)
+=> yarn add firebase
+=> yarn add react-firebaseui
+=> yarn add bootstrap
+=> yarn add reactstrap

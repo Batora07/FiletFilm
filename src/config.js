@@ -2,7 +2,7 @@ const API_URL ='https://api.themoviedb.org/3';
 
 const IMAGE_BASE_URL = 'http://image.tmdb.org/t/p';
 
-const API_KEY = '   '; // penser à la supprimer avant chaque commit :)
+const API_KEY = ''; // penser à la supprimer avant chaque commit :)
 
 const BACKDROP_SIZE = 'w1280';
 

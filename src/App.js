@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import './App.css';
-import { Home, Details, NotFound } from './routes';
+import { Home, Details, NotFound, MoviePlayer, Login } from './routes';
 import { Header, Spinner } from './components';
 import { API_URL, API_KEY, IMAGE_BASE_URL, BACKDROP_SIZE } from './config';
+import { initFirebase } from './utils/firebase-config';
+import store from './store';
+import './App.css';
 
 class App extends Component {
   state={
@@ -21,6 +24,7 @@ class App extends Component {
 
   async componentDidMount() {
     try {
+      initFirebase();
       const { data : {results, page, total_pages }} = await this.loadMovies();
       console.log('res', results);
       this.setState({
@@ -93,29 +97,34 @@ class App extends Component {
 
   render(){
     return (
-      <BrowserRouter>
-        <div className="App">
-          <Header badge={this.state.badge} />
-          {!this.state.image ? 
-          (
-            <Spinner />
-          ) : (
-            <Switch>
-            <Route path="/" exact render={() => (
-              <Home 
-                {...this.state}
-                onSearchClick = {this.handleSearch}
-                onButtonClick = {this.loadMore}
+      <Provider store={store}>
+        <BrowserRouter>
+          <div className="App">
+            <Header badge={this.state.badge} />
+            {!this.state.image ? 
+            (
+              <Spinner />
+            ) : (
+              <Switch>
+              <Route path="/" exact render={() => (
+                <Home 
+                  {...this.state}
+                  onSearchClick = {this.handleSearch}
+                  onButtonClick = {this.loadMore}
+                />
+                )
+              }/>
               />
-              )
-            }/>
-            />
-            <Route path='/:id' exact component={ Details }/>
-            <Route component={NotFound} /> 
-          </Switch>         
-          )}
-        </div>
-      </BrowserRouter>
+              <Route path="/player" exact component={MoviePlayer} />
+              <Route path="/player/:id" exact component={MoviePlayer} />
+              <Route path="/login" exact component={Login} />
+              <Route path='/:id' exact component={ Details }/>
+              <Route component={NotFound} /> 
+            </Switch>         
+            )}
+          </div>
+        </BrowserRouter>
+      </Provider>
     );
   }
 }

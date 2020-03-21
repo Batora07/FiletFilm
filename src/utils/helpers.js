@@ -12,3 +12,5 @@ export const convertMoney = money => {
     });
     return formatter.format(money);
 };
+
+export const FILETFILM_APP_LOGGEDIN = "FILETFILM_APP_LOGGEDIN";
