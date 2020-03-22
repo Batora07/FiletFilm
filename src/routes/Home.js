@@ -2,12 +2,24 @@ import React, { Component } from 'react';
 import { HeaderImg, Searchbar, PosterList, LoadButton } from '../components';
 import { connect } from 'react-redux';
 import { getMovies } from '../actions/movie';
+import { renderLogin } from '../utils/helpers';
+import { withRouter } from 'react-router-dom';
+
+const flag = renderLogin();
 
 class HomeComponent extends Component {
-    componentDidMount() {
-        this.props.getMovies();
+    state = {
+        flag: flag
     }
 
+    componentDidMount() {
+        if(!this.state.flag){
+            this.props.history.push({pathname: '/login'});
+            return;
+        }
+        this.props.getMovies();
+    }
+    
     render(){
       const {mTitle, mDesc, image, movies, loading} = this.props;
         return(
@@ -37,6 +49,6 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-const Home = connect(mapStateToProps, mapDispatchToProps)(HomeComponent);
+const Home = connect(mapStateToProps, mapDispatchToProps)(withRouter(HomeComponent));
 
 export { Home };

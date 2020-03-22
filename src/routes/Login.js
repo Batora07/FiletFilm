@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import firebase from 'firebase';
 import { Alert } from 'reactstrap';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
+import firebase from 'firebase';
 import '../css/Login.css';
 
 import { FILETFILM_APP_LOGGEDIN } from '../utils/helpers';
@@ -20,6 +20,8 @@ const uiConfig = {
         signInSuccessWithAuthResult : () => {
             console.log('connection réussie');
             localStorage.setItem(FILETFILM_APP_LOGGEDIN, true);
+            console.log('utilisateur connecté', firebase.auth().currentUser)
+            debugger;
             return true;
         }
     }

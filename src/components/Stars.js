@@ -31,7 +31,7 @@ const Stars = props => {
     }
 
     return (
-        <div className="stars">
+        <div className="stars--container">
             {renderStars1()}
             {renderStars2()}
         </div>

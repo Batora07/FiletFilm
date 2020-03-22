@@ -5,17 +5,20 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 import '../css/LoadButton.css';
+import '../css/Spinner.css';
 
 library.add(faSpinner);
 
 const Spinner = props => {
     return (
-        <FontAwesomeIcon
-            icon="spinner"
-            pulse
-            size="7x"
-            className="fa-faSpinner" 
-        />
+        <div className="spinner--container">
+            <FontAwesomeIcon
+                icon="spinner"
+                pulse
+                size="7x"
+                className="fa-faSpinner" 
+            />
+        </div>
     )
 }
 

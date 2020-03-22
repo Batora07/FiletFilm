@@ -44,7 +44,13 @@ class PosterComponent extends Component {
                 onMouseLeave={this.hideOverlay}
             >
                 <Link to={{pathname: `/${this.props.id}`}}>
-                    <img className="poster--img" src={this.props.imgSrc} alt="poster" />
+                    {this.props.imgSrc ? (
+                        <img className="poster--img" src={this.props.imgSrc} alt="poster" />
+                    ) : (
+                        <img className="poster--img" src={'./images/no_image.jpg'} alt="poster" />
+                    )
+                }
+                    
                 </Link>
                 {this.state.hover ? 
                 (

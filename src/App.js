@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Home, Details, NotFound, MoviePlayer, Login } from './routes';
+import { Home, Details, NotFound, MoviePlayer, Login, Payment } from './routes';
 import { Header, Spinner } from './components';
 import { API_URL, API_KEY, IMAGE_BASE_URL, BACKDROP_SIZE } from './config';
 import { initFirebase } from './utils/firebase-config';
@@ -118,6 +118,7 @@ class App extends Component {
               <Route path="/player" exact component={MoviePlayer} />
               <Route path="/player/:id" exact component={MoviePlayer} />
               <Route path="/login" exact component={Login} />
+              <Route path="/payment" exact component={ Payment } />
               <Route path='/:id' exact component={ Details }/>
               <Route component={NotFound} /> 
             </Switch>         

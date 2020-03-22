@@ -7,99 +7,99 @@ import { calcTime } from '../utils/helpers';
 import '../css/MoviePlayer.css';
 import axios from 'axios';
 import _ from 'lodash';
+import { renderLogin } from '../utils/helpers';
+import firebase from 'firebase';
+
+const flag = renderLogin();
 
 let newMovies = [];
 
 class MoviePlayer extends Component {
     state = {
-        movies : [
-            {
-                duration: "2h 9m",
-                id: 429617,
-                imageUrl: "http://image.tmdb.org/t/p/w1280//5myQbDzw3l8K9yofUXRJ4UTVgam.jpg",
-                position: 1,
-                title: "Spider-Man : Far from home",
-                videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            },
-            {
-                duration: "2h 9m",
-                id: 429619,
-                imageUrl: "http://image.tmdb.org/t/p/w1280//5myQbDzw3l8K9yofUXRJ4UTVgam.jpg",
-                position: 2,
-                title: "Spider-Man : Far from home",
-                videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            },
-            {
-                duration: "2h 9m",
-                id: 429620,
-                imageUrl: "http://image.tmdb.org/t/p/w1280//5myQbDzw3l8K9yofUXRJ4UTVgam.jpg",
-                position: 3,
-                title: "Spider-Man : Far from home",
-                videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            },
-            {
-                duration: "2h 9m",
-                id: 429621,
-                imageUrl: "http://image.tmdb.org/t/p/w1280//5myQbDzw3l8K9yofUXRJ4UTVgam.jpg",
-                position: 4,
-                title: "Spider-Man : Far from home",
-                videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            },
-            {
-                duration: "2h 9m",
-                id: 429622,
-                imageUrl: "http://image.tmdb.org/t/p/w1280//5myQbDzw3l8K9yofUXRJ4UTVgam.jpg",
-                position: 5,
-                title: "Spider-Man : Far from home",
-                videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            }
-        ],
-        selectedMovie: {
-            duration: "2h 9m",
-            id: 429617,
-            imageUrl: "http://image.tmdb.org/t/p/w1280//5myQbDzw3l8K9yofUXRJ4UTVgam.jpg",
-            position: 1,
-            title: "Spider-Man : Far from home",
-            videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        },
-        loading: true
+        movies : [],
+        selectedMovie: {},
+        loading: true,
+        flag: flag
     };
 
     async componentDidMount() {
-        const oldMovies = JSON.parse(localStorage.getItem('movies'));
-        const results = await this.getNewMovies(oldMovies);
-        newMovies = oldMovies.map((oldMovie, index) => {
-            return {
-                id: oldMovie.id,
-                position: index + 1,
-                title: oldMovie.title,
-                duration: results[index],
-                imageUrl: `${IMAGE_BASE_URL}/${BACKDROP_SIZE}/${oldMovie.backdrop_path}`,
-                videoUrl: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            }
+        if(!this.state.flag){
+            this.props.history.push({pathname: '/login'});
+            return;
+        }
+        firebase.auth().onAuthStateChanged(function(user) {
+            console.log("user", user);
+            const thisUser = user;
+            if(!user){
+                this.props.history.push({pathname: '/login'});
+                return;
+            }    
         })
 
-        const id = this.props.match.params.id;
+        setTimeout(() => {                   
+            const user = firebase.auth().currentUser;         
+            if (user) {
+                //const user = firebase.auth().currentUser;
+                let dbRef;
+                dbRef = firebase.database().ref(`users/${user.uid}`)
+                dbRef.on('value', async snapshot => {
+                    const data = snapshot.val();
+                    console.log('data', data);
+                    if(data){
+                        const targetDate = data.validUntil;
+                        const now = new Date().getTime();
+                        // paiement pas encore expiré
+                        if(targetDate > now){
+                            console.log('abonnement valide');
 
-        if(id){
-            const selectedMovie = this.getSelectedMovie(newMovies, id);
-            this.setState({
-                loading: false,
-                movies: [...newMovies],
-                selectedMovie
-            })
-        }
-        else {
-            const selectedMovie = newMovies[0];
-            this.setState({
-                loading: false,
-                movies: [...newMovies],
-                selectedMovie
-            })
-            this.props.history.push({
-                pathname: `/player/${selectedMovie.id}`
-            })
-        }
+                            const oldMovies = JSON.parse(localStorage.getItem('movies'));
+                            const results = await this.getNewMovies(oldMovies);
+                            newMovies = oldMovies.map((oldMovie, index) => {
+                                return {
+                                    id: oldMovie.id,
+                                    position: index + 1,
+                                    title: oldMovie.title,
+                                    duration: results[index],
+                                    imageUrl: `${IMAGE_BASE_URL}/${BACKDROP_SIZE}/${oldMovie.backdrop_path}`,
+                                    videoUrl: `https://123files.club/imdb/tmdb/movie/?id=`+oldMovie.id
+                                }
+                            })
+
+                            const id = this.props.match.params.id;
+
+                            if(id){
+                                const selectedMovie = this.getSelectedMovie(newMovies, id);
+                                this.setState({
+                                    loading: false,
+                                    movies: [...newMovies],
+                                    selectedMovie
+                                })
+                            }
+                            else {
+                                const selectedMovie = newMovies[0];
+                                this.setState({
+                                    loading: false,
+                                    movies: [...newMovies],
+                                    selectedMovie
+                                })
+                                this.props.history.push({
+                                    pathname: `/player/${selectedMovie.id}`
+                                })
+                            }
+                        } else {
+                            // paiement expiré
+                            this.props.history.push({pathname: '/payment'});
+                        }
+                    } else {
+                        this.props.history.push({pathname: '/payment'});
+                    }
+                })
+            }  
+            // user not logged in                                   
+            else {
+                this.props.history.push({pathname: "/login"});
+            }
+        }, 3000);       
     }
 
     componentDidUpdate(prevProps){
